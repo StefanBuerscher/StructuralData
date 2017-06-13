@@ -1,6 +1,14 @@
 package sdm.servlets;
 
 import java.io.*;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Die Beschreibung des Typs hier eingeben. Erstellungsdatum: (17.03.2004
@@ -10,7 +18,28 @@ import java.io.*;
  */
 public class SDMServlet extends javax.servlet.http.HttpServlet {
 
+  private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
   private java.sql.Connection connection_;
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    try (PrintWriter pw = response.getWriter()) {
+      java.sql.Statement stmt = connection_.createStatement();
+      stmt.execute("select Id, Forename, Surname, Party, DOB from politician");
+
+      java.sql.ResultSet rs = stmt.getResultSet();
+      while (rs.next()) {
+        int id = rs.getInt(1);
+        String forename = rs.getString(2);
+        String surname = rs.getString(3);
+        String party = rs.getString(4);
+        Date dob = rs.getDate(5);
+        pw.println(String.format("%s,%s,%s,%s,%s", id, forename, surname, party, df.format(dob)));
+      }
+    } catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+  }
 
   /**
    * Process incoming HTTP GET requests
@@ -18,7 +47,7 @@ public class SDMServlet extends javax.servlet.http.HttpServlet {
    * @param request Object that encapsulates the request to the servlet
    * @param response Object that encapsulates the response from the servlet
    */
-  public void doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, java.io.IOException {
+  public void doGet2(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, java.io.IOException {
     String action = request.getParameter("action");
     if (action == null || action.trim().length() == 0) {
       return; //No Action specified
@@ -86,12 +115,16 @@ public class SDMServlet extends javax.servlet.http.HttpServlet {
 
   /**
    * Initializes the servlet.
+   *
+   * @param config
+   * @throws javax.servlet.ServletException
    */
+  @Override
   public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException {
     try {
       Class.forName("com.mysql.jdbc.Driver");
-      connection_ = java.sql.DriverManager.getConnection("jdbc:mysql://localhost/datamanagement", "student", "student");
-    } catch (Exception e) {
+      connection_ = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/sdm", "sdm", "sdm");
+    } catch (ClassNotFoundException | SQLException e) {
       throw new javax.servlet.ServletException(e);
     }
   }
