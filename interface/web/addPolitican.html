@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+  <head>
+    <title>Add a politican</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      input[type=text], input[type=date], select {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      input[type=button] {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      input[type=button]:hover {
+        background-color: #45a049;
+      }
+
+      div {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 20px;
+      }
+    </style>
+    <script>
+      function savePolitican() {
+        var xhr = new XMLHttpRequest();
+        var url = "http://localhost:8080/sdm/test?action=postPolitican";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            //console.log(xhr.responseText);
+            location.href='index.html';
+          }
+        };
+        var dobValue = document.getElementById("dob").value;
+        var dob = new Date(dobValue).toISOString();
+        var partySelect = document.getElementById("party");
+        var p = {
+          "id": 0,
+          "forename": document.getElementById("fname").value,
+          "surname": document.getElementById("lname").value,
+          "party": partySelect.options[partySelect.selectedIndex].value,
+          "dob": dob
+        };
+        xhr.send(JSON.stringify(p));
+      }
+    </script>
+  </head>
+
+  <body>
+
+    <h3>Enter politican detail</h3>
+
+    <div>
+      <form>
+        <label for="fname">First Name</label>
+        <input type="text" id="fname" name="firstname">
+
+        <label for="lname">Last Name</label>
+        <input type="text" id="lname" name="lastname">
+
+        <label for="party">Party</label>
+        <select id="party" name="party">
+          <option value="SPÖ">SPÖ</option>
+          <option value="ÖVP">ÖVP</option>
+          <option value="FPÖ">FPÖ</option>
+        </select>
+
+        <label for="dob">Date of birth</label>
+        <input type="date" id="dob" name="dob">
+
+        <input type="button" value="Submit" onclick="savePolitican()">
+      </form>
+    </div>
+
+  </body>
+</html>
