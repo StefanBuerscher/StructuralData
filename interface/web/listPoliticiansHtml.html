@@ -16,27 +16,65 @@ and open the template in the editor.
             <p>&nbsp;</p>
             <table style="width: 45px;" id="table_politicians">
                 <tbody>
-                    <tr>
-                        <td style="width: 11px;">Firstname&nbsp;</td>
-                        <td style="width: 11px;">Surname</td>
-                        <td style="width: 11px;">DOB</td>
-                        <td style="width: 11px;">Party</td>
+                    <tr id="titles">
+
                     </tr>
                 </tbody>
             </table>
         </div>
         <script>
 
-            /*$.getJSON('http://localhost:8084/sdm/test?action=getPoliticans', function (data) {
-                console.log(data);
-            });*/
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', "http://localhost:8080/sdm/test?action=getPoliticans", true);
+            xhr.send();
 
-            /*var table = document.getElementById("table_politicians");
-             var row = table.insertRow(0);
-             var cell1 = row.insertCell(0);
-             var cell2 = row.insertCell(1);
-             cell1.innerHTML = "NEW CELL1";
-             cell2.innerHTML = "NEW CELL2";*/
+            xhr.addEventListener("readystatechange", processRequest, false);
+
+            xhr.onreadystatechange = processRequest;
+
+            function processRequest(e) {
+
+                //wird 2 mal ausgelöst !?!?
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log(e);
+                    var response = JSON.parse(xhr.responseText);
+
+                    var row = document.getElementById("titles");
+                    if (response.length > 0) {
+                        for (var key in response[0]) {
+                            var x = row.insertCell(-1);
+                            x.innerHTML = key;
+                        }
+                    }
+
+
+                    var arrayLength = response.length;
+                    for (var i = 0; i < arrayLength; i++) {
+                        myFunction(response[i]);
+                    }
+                }
+            }
+
+
+
+            function myFunction(response) {
+                var table = document.getElementById("table_politicians");
+                var row = table.insertRow(-1);
+
+                for (var key in response) {
+                    if (response.hasOwnProperty(key)) {
+
+                        var val = response[key];
+                        var cell1 = row.insertCell(-1);
+                        cell1.innerHTML = val;
+                    }
+                }
+            }
+
+            //Erklärung: https://www.kirupa.com/html5/making_http_requests_js.htm
+
+
+
         </script>
     </body>
 
