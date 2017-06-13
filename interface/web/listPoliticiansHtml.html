@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>List Politicians</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    </head>
+    <body>
+        <div>
+            <p>&nbsp;</p>
+            <table style="width: 45px;" id="table_politicians">
+                <tbody>
+                    <tr>
+                        <td style="width: 11px;">Firstname&nbsp;</td>
+                        <td style="width: 11px;">Surname</td>
+                        <td style="width: 11px;">DOB</td>
+                        <td style="width: 11px;">Party</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <script>
+
+            $.getJSON('http://localhost:8084/sdm/test?action=getPoliticans', function (data) {
+                console.log(data);
+            });
+
+            /*var table = document.getElementById("table_politicians");
+             var row = table.insertRow(0);
+             var cell1 = row.insertCell(0);
+             var cell2 = row.insertCell(1);
+             cell1.innerHTML = "NEW CELL1";
+             cell2.innerHTML = "NEW CELL2";*/
+        </script>
+    </body>
+
+</html>
