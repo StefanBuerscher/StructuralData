@@ -7,7 +7,7 @@
 -- Server-Version: 10.1.21-MariaDB
 -- PHP-Version: 5.6.30
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+-- SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
@@ -36,20 +36,6 @@ CREATE TABLE `bribery` (
   `Confirmed` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Daten für Tabelle `bribery`
---
-
-INSERT INTO `bribery` (`FK_Politician`, `FK_Lobbyist`, `Value`, `Reason`, `Confirmed`) VALUES
-(0, 1, 10000, 'Murkraftwerk', 1),
-(0, 2, 12000, 'Gesetz1', 1),
-(0, 3, 15000, 'Gesetz2', 1),
-(1, 2, 8000, 'Gesetz3', 1),
-(2, 2, 4000, 'Gesetz4', 0),
-(3, 1, 9000, 'Gesetz1', 1),
-(3, 4, 6000, 'Gesetz13', 0),
-(5, 4, 12000, 'Gesetz8', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -57,23 +43,14 @@ INSERT INTO `bribery` (`FK_Politician`, `FK_Lobbyist`, `Value`, `Reason`, `Confi
 --
 
 CREATE TABLE `lobbyist` (
-  `Id` int(11) NOT NULL,
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Forename` text NOT NULL,
   `Surname` text NOT NULL,
   `DOB` date NOT NULL,
-  `Company` text NOT NULL
+  `Company` text NOT NULL,
+  PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Daten für Tabelle `lobbyist`
---
-
-INSERT INTO `lobbyist` (`Id`, `Forename`, `Surname`, `DOB`, `Company`) VALUES
-(1, 'Fritz', 'Phantom', '2017-06-11', 'Shell'),
-(2, 'Tom', 'Turbo', '2016-05-11', 'BP'),
-(3, 'Hans', 'Hermann', '2015-05-11', 'Estag'),
-(4, 'Otto', 'Normalverbraucher', '2013-05-11', 'Monsanto'),
-(5, 'Hans', 'Huber', '2012-02-10', 'Springer');
 
 -- --------------------------------------------------------
 
@@ -82,26 +59,53 @@ INSERT INTO `lobbyist` (`Id`, `Forename`, `Surname`, `DOB`, `Company`) VALUES
 --
 
 CREATE TABLE `politician` (
-  `Id` int(11) NOT NULL,
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Forename` text NOT NULL,
   `Surname` text NOT NULL,
   `DOB` date NOT NULL,
-  `Party` text NOT NULL
+  `Party` text NOT NULL,
+  PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Daten für Tabelle `politician`
 --
 
-INSERT INTO `politician` (`Id`, `Forename`, `Surname`, `DOB`, `Party`) VALUES
-(0, 'Siegfried', 'Nagl', '1963-04-18', 'ÖVP'),
-(1, 'Mario', 'Eustacchio', '1938-03-13', 'FPÖ'),
-(2, 'Alexander', 'Van da Bellen', '1877-12-12', 'Die Grünen'),
-(3, 'Wolfgang', 'Schüssel', '1950-02-12', 'ÖVP'),
-(4, 'Jesus', 'Christus', '0000-01-01', 'KPÖ'),
-(5, 'Alfred', 'Gusenbauer', '1957-12-04', 'SPÖ'),
-(6, 'Michael', 'Ehmann', '1960-04-04', 'SPÖ'),
-(7, 'Eva', 'Glawischnig', '1945-12-12', 'Die Grünen');
+INSERT INTO `politician` (`Forename`, `Surname`, `DOB`, `Party`) VALUES
+('Siegfried', 'Nagl', '1963-04-18', 'ÖVP'),
+('Mario', 'Eustacchio', '1938-03-13', 'FPÖ'),
+('Alexander', 'Van da Bellen', '1877-12-12', 'Die Grünen'),
+('Wolfgang', 'Schüssel', '1950-02-12', 'ÖVP'),
+('Jesus', 'Christus', '0000-01-01', 'KPÖ'),
+('Alfred', 'Gusenbauer', '1957-12-04', 'SPÖ'),
+('Michael', 'Ehmann', '1960-04-04', 'SPÖ'),
+('Eva', 'Glawischnig', '1945-12-12', 'Die Grünen');
+
+--
+-- Daten für Tabelle `lobbyist`
+--
+
+INSERT INTO `lobbyist` (`Forename`, `Surname`, `DOB`, `Company`) VALUES
+('Fritz', 'Phantom', '2017-06-11', 'Shell'),
+('Tom', 'Turbo', '2016-05-11', 'BP'),
+('Hans', 'Hermann', '2015-05-11', 'Estag'),
+('Otto', 'Normalverbraucher', '2013-05-11', 'Monsanto'),
+('Hans', 'Huber', '2012-02-10', 'Springer');
+
+
+--
+-- Daten für Tabelle `bribery`
+--
+
+INSERT INTO `bribery` (`FK_Politician`, `FK_Lobbyist`, `Value`, `Reason`, `Confirmed`) VALUES
+(1, 1, 10000, 'Murkraftwerk', 1),
+(1, 2, 12000, 'Gesetz1', 1),
+(1, 3, 15000, 'Gesetz2', 1),
+(2, 2, 8000, 'Gesetz3', 1),
+(3, 2, 4000, 'Gesetz4', 0),
+(4, 1, 9000, 'Gesetz1', 1),
+(5, 4, 6000, 'Gesetz13', 0),
+(6, 4, 12000, 'Gesetz8', 1);
 
 --
 -- Indizes der exportierten Tabellen
@@ -114,21 +118,6 @@ ALTER TABLE `bribery`
   ADD PRIMARY KEY (`FK_Politician`,`FK_Lobbyist`),
   ADD KEY `FK_Lobbyist` (`FK_Lobbyist`);
 
---
--- Indizes für die Tabelle `lobbyist`
---
-ALTER TABLE `lobbyist`
-  ADD PRIMARY KEY (`Id`);
-
---
--- Indizes für die Tabelle `politician`
---
-ALTER TABLE `politician`
-  ADD PRIMARY KEY (`Id`);
-
---
--- Constraints der exportierten Tabellen
---
 
 --
 -- Constraints der Tabelle `bribery`

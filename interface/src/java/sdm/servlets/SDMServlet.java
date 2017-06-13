@@ -1,9 +1,14 @@
 package sdm.servlets;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.*;
+import java.rmi.ServerException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -22,41 +27,61 @@ import sdm.model.Politican;
  */
 public class SDMServlet extends HttpServlet {
 
-  private enum Action {
-    getPoliticans, postPolitican
+  private enum GetAction {
+    getPoliticans
   };
 
-  private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-  private java.sql.Connection connection_;
+  private enum PostAction {
+    postPolitican
+  };
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String actionString = request.getParameter("action");
-    Action action = null;
+    GetAction action = null;
     try {
-      action = Action.valueOf(actionString);
+      action = GetAction.valueOf(actionString);
     } catch (IllegalArgumentException ex) {
-      throw new RuntimeException("Specify action parameter! Possible: " + Arrays.asList(Action.values()));
+      throw new RuntimeException("Specify GET action parameter! Possible: " + Arrays.asList(GetAction.values()));
     }
 
     switch (action) {
       case getPoliticans:
         getPoliticans(response);
         break;
-      case postPolitican:
-        break;
     }
 
   }
 
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String actionString = request.getParameter("action");
+    PostAction action = null;
+    try {
+      action = PostAction.valueOf(actionString);
+    } catch (IllegalArgumentException ex) {
+      throw new RuntimeException("Specify POST action parameter! Possible: " + Arrays.asList(PostAction.values()));
+    }
+
+    switch (action) {
+      case postPolitican:
+        postPoliticans(request, response);
+        break;
+    }
+  }
+
   private void getPoliticans(HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
+    Connection connection = null;
+    Statement stmt = null;
+    ResultSet rs = null;
 
     try (PrintWriter pw = response.getWriter()) {
-      java.sql.Statement stmt = connection_.createStatement();
+      connection = getDBConnection();
+      stmt = connection.createStatement();
       stmt.execute("select Id, Forename, Surname, Party, DOB from politician");
 
-      java.sql.ResultSet rs = stmt.getResultSet();
+      rs = stmt.getResultSet();
       List<Politican> politicans = new ArrayList<>();
       while (rs.next()) {
         int id = rs.getInt(1);
@@ -67,27 +92,88 @@ public class SDMServlet extends HttpServlet {
         Politican p = new Politican(id, forename, surname, party, dob);
         politicans.add(p);
       }
-      Gson gson = new Gson();
+      Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
       String json = gson.toJson(politicans);
       pw.print(json);
     } catch (SQLException ex) {
-      ex.printStackTrace();
+      throw new ServerException("SQL", ex);
+    } finally {
+      try {
+        if (rs != null) {
+          rs.close();
+        }
+      } catch (SQLException e) {
+      }
+      try {
+        if (stmt != null) {
+          stmt.close();
+        }
+      } catch (SQLException e) {
+      }
+      try {
+        if (connection != null) {
+          connection.close();
+        }
+      } catch (SQLException e) {
+      }
     }
   }
 
-  /**
-   * Initializes the servlet.
-   *
-   * @param config
-   * @throws javax.servlet.ServletException
-   */
-  @Override
-  public void init(javax.servlet.ServletConfig config) throws javax.servlet.ServletException {
+  private void postPoliticans(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    StringBuilder jb = new StringBuilder();
+    BufferedReader reader = request.getReader();
+    String line;
+    while ((line = reader.readLine()) != null) {
+      jb.append(line);
+    }
+
+    Gson gson = new Gson();
+    Politican p = gson.fromJson(jb.toString(), Politican.class);
+
+    Connection connection = null;
+    PreparedStatement ps = null;
+    String insertTableSQL = "insert into politician"
+            + " (Forename, Surname, Party, DOB) VALUES"
+            + " (?, ?, ?, ?)";
+
+    try {
+      connection = getDBConnection();
+      ps = connection.prepareStatement(insertTableSQL);
+      ps.setString(1, p.getForename());
+      ps.setString(2, p.getSurname());
+      ps.setString(3, p.getParty());
+      ps.setDate(4, new java.sql.Date(p.getDob().getTime()));
+      ps.executeUpdate();
+    } catch (SQLException ex) {
+      throw new ServerException("SQL", ex);
+    } finally {
+      try {
+        if (ps != null) {
+          ps.close();
+        }
+      } catch (SQLException e) {
+      }
+      try {
+        if (connection != null) {
+          connection.close();
+        }
+      } catch (SQLException e) {
+      }
+    }
+
+  }
+
+  private static Connection getDBConnection() throws SQLException {
+    Connection connection = null;
+
     try {
       Class.forName("com.mysql.jdbc.Driver");
-      connection_ = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/sdm", "sdm", "sdm");
-    } catch (ClassNotFoundException | SQLException e) {
-      throw new javax.servlet.ServletException(e);
+      connection = java.sql.DriverManager.getConnection("jdbc:mysql://localhost:3306/sdm", "sdm", "sdm");
+    } catch (ClassNotFoundException ex) {
+      throw new RuntimeException(ex);
     }
+
+    return connection;
   }
+
 }
