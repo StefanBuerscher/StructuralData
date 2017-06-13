@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 13. Jun 2017 um 12:21
+-- Erstellungszeit: 13. Jun 2017 um 13:26
 -- Server-Version: 10.1.21-MariaDB
 -- PHP-Version: 5.6.30
 
@@ -17,8 +17,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `db_struct`
+-- Datenbank: `sdm`
 --
+CREATE DATABASE IF NOT EXISTS `sdm` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `sdm`;
 
 -- --------------------------------------------------------
 
@@ -109,13 +111,31 @@ INSERT INTO `politician` (`Id`, `Forename`, `Surname`, `DOB`, `Party`) VALUES
 -- Indizes für die Tabelle `bribery`
 --
 ALTER TABLE `bribery`
-  ADD PRIMARY KEY (`FK_Politician`,`FK_Lobbyist`);
+  ADD PRIMARY KEY (`FK_Politician`,`FK_Lobbyist`),
+  ADD KEY `FK_Lobbyist` (`FK_Lobbyist`);
+
+--
+-- Indizes für die Tabelle `lobbyist`
+--
+ALTER TABLE `lobbyist`
+  ADD PRIMARY KEY (`Id`);
 
 --
 -- Indizes für die Tabelle `politician`
 --
 ALTER TABLE `politician`
   ADD PRIMARY KEY (`Id`);
+
+--
+-- Constraints der exportierten Tabellen
+--
+
+--
+-- Constraints der Tabelle `bribery`
+--
+ALTER TABLE `bribery`
+  ADD CONSTRAINT `bribery_ibfk_1` FOREIGN KEY (`FK_Politician`) REFERENCES `politician` (`Id`),
+  ADD CONSTRAINT `bribery_ibfk_2` FOREIGN KEY (`FK_Lobbyist`) REFERENCES `lobbyist` (`Id`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
