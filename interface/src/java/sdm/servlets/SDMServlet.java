@@ -144,7 +144,11 @@ public class SDMServlet extends HttpServlet {
     try (PrintWriter pw = response.getWriter()) {
       connection = getDBConnection();
       stmt = connection.createStatement();
-      stmt.execute("select p.Id, p.Forename, p.Surname, p.Party, p.DOB, SUM(b.Value) from politician p, bribery b where p.id = b.FK_Politician GROUP BY p.Id");
+      String sql = "select p.Id, p.Forename, p.Surname, p.Party, p.DOB, coalesce(SUM(b.Value),0) "
+              + " from politician p                                                              "
+              + " left outer join bribery b on p.id = b.FK_Politician                            "
+              + " GROUP BY p.Id                                                                  ";
+      stmt.execute(sql);
 
       rs = stmt.getResultSet();
       List<Politican> politicans = new ArrayList<>();

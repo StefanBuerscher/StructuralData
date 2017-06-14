@@ -72,7 +72,7 @@ and open the template in the editor.
       }
 
       function savePolitican() {
-        var xhr = new XMLHttpRequest();
+        xhr = new XMLHttpRequest();
         var url = "http://localhost:8080/sdm/test?action=postPolitican";
         xhr.open("POST", url, true);
         xhr.setRequestHeader("Content-type", "application/json");
