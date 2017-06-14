@@ -37,6 +37,9 @@ public class SDMServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    request.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding("UTF-8");
+
     String actionString = request.getParameter("action");
     GetAction action = null;
     try {
@@ -58,6 +61,9 @@ public class SDMServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    request.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding("UTF-8");
+
     String actionString = request.getParameter("action");
     PostAction action = null;
     try {
@@ -186,17 +192,27 @@ public class SDMServlet extends HttpServlet {
 
     Connection connection = null;
     PreparedStatement ps = null;
-    String insertTableSQL = "insert into politician"
-            + " (Forename, Surname, Party, DOB) VALUES"
-            + " (?, ?, ?, ?)";
+    String sql = "";
+    if (p.getId() <= 0) {
+      sql = "insert into politician"
+              + " (Forename, Surname, Party, DOB) VALUES"
+              + " (?, ?, ?, ?)";
+    } else {
+      sql = "update politician"
+              + " set Forename = ?, Surname = ?, Party = ?, DOB = ?"
+              + " where id = ?";
+    }
 
     try {
       connection = getDBConnection();
-      ps = connection.prepareStatement(insertTableSQL);
+      ps = connection.prepareStatement(sql);
       ps.setString(1, p.getForename());
       ps.setString(2, p.getSurname());
       ps.setString(3, p.getParty());
       ps.setDate(4, new java.sql.Date(p.getDob().getTime()));
+      if (p.getId() > 0) {
+        ps.setInt(5, p.getId());
+      }
       ps.executeUpdate();
     } catch (SQLException ex) {
       throw new ServerException("SQL", ex);
