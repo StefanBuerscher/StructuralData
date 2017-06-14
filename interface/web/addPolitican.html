@@ -42,6 +42,35 @@ and open the template in the editor.
       }
     </style>
     <script>
+
+      var url_string = window.location.href;
+      var url = new URL(url_string);
+      var c = url.searchParams.get("id");
+      //console.log(c);
+
+      if (c === null) {
+        c = 0;
+      }
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', "http://localhost:8080/sdm/test?action=getPoliticanById&id=" + c, true);
+      xhr.send();
+      xhr.addEventListener("readystatechange", processRequest, false);
+
+
+      function processRequest(e) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          console.log(e);
+          var response = JSON.parse(xhr.responseText);
+          console.log(response);
+          if (response !== null) {
+            document.getElementById("fname").value = response.forename;
+            document.getElementById("lname").value = response.surname;
+            document.getElementById("party").value = response.party;
+            document.getElementById("dob").value = response.dob.split('T')[0];
+          }
+        }
+      }
+
       function savePolitican() {
         var xhr = new XMLHttpRequest();
         var url = "http://localhost:8080/sdm/test?action=postPolitican";
@@ -50,14 +79,14 @@ and open the template in the editor.
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4 && xhr.status === 200) {
             //console.log(xhr.responseText);
-            location.href='index.html';
+            location.href = 'index.html';
           }
         };
         var dobValue = document.getElementById("dob").value;
         var dob = new Date(dobValue).toISOString();
         var partySelect = document.getElementById("party");
         var p = {
-          "id": 0,
+          "id": c,
           "forename": document.getElementById("fname").value,
           "surname": document.getElementById("lname").value,
           "party": partySelect.options[partySelect.selectedIndex].value,
@@ -85,6 +114,9 @@ and open the template in the editor.
           <option value="SPÖ">SPÖ</option>
           <option value="ÖVP">ÖVP</option>
           <option value="FPÖ">FPÖ</option>
+          <option value="FPÖ">FPÖ</option>
+          <option value="Die Grünen">Die Grünen</option>
+          <option value="KPÖ">KPÖ</option>
         </select>
 
         <label for="dob">Date of birth</label>
