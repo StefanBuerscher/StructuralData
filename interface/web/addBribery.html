@@ -60,6 +60,26 @@ and open the template in the editor.
             el.value = response[p].id;
             pSelect.appendChild(el);
           }
+
+          xhr = new XMLHttpRequest();
+          xhr.open('GET', "http://localhost:8080/sdm/test?action=getLobbyists", true);
+          xhr.send();
+          xhr.addEventListener("readystatechange", processRequest2, false);
+        }
+      }
+
+      function processRequest2(e) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+
+          var lSelect = document.getElementById("lobbyist");
+          for (l in response) {
+            console.log(response[l]);
+            let el = document.createElement("option");
+            el.textContent = response[l].forename + " " + response[l].surname + ", " + response[l].company;
+            el.value = response[l].id;
+            lSelect.appendChild(el);
+          }
         }
       }
 
@@ -81,7 +101,7 @@ and open the template in the editor.
           "fkLobbyist": lSelect.options[lSelect.selectedIndex].value,
           "value": document.getElementById("value").value,
           "reason": document.getElementById("reason").value,
-          "confirmed": false
+          "confirmed": document.getElementById("con").checked
         };
         xhr.send(JSON.stringify(b));
       }

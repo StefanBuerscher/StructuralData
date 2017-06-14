@@ -6,13 +6,49 @@ and open the template in the editor.
 -->
 <html>
   <head>
-    <title>SDM</title>
+    <title>SDM - Corruption Tracker</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      input[type=text], input[type=date], input[type=number], select {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      input[type=button] {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      input[type=button]:hover {
+        background-color: #45a049;
+      }
+
+      div {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 20px;
+      }
+    </style>
   </head>
   <body>
-    <div><h2>Interface runs!</h2>Use servlet path...</div>
-    <input type="button" onclick="location.href='listPoliticiansHtml.html';" value="List Politicians" />
-    <input type="button" onclick="location.href='addPolitican.html';" value="Add Politician" />
+    <h1>Corruption Tracker</h1>
+    <div>
+      <h3>Give us some hints for corrupt politicians and lobbyists...</h3>
+      <input type="button" onclick="location.href = 'listPoliticiansHtml.html';" value="List Politicians" />
+      <input type="button" onclick="location.href = 'addPolitican.html';" value="Add Politician" />
+      <input type="button" onclick="location.href = 'addBribery.html';" value="Add Bribery" />
+    </div>
   </body>
 </html>
