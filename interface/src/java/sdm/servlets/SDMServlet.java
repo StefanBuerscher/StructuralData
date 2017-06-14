@@ -28,7 +28,7 @@ import sdm.model.Politican;
 public class SDMServlet extends HttpServlet {
 
   private enum GetAction {
-    getPoliticans
+    getPoliticans, getPoliticanById
   };
 
   private enum PostAction {
@@ -49,6 +49,9 @@ public class SDMServlet extends HttpServlet {
       case getPoliticans:
         getPoliticans(response);
         break;
+      case getPoliticanById:
+        getPoliticanById(request, response);
+        break;
     }
 
   }
@@ -67,6 +70,57 @@ public class SDMServlet extends HttpServlet {
       case postPolitican:
         postPoliticans(request, response);
         break;
+    }
+  }
+
+  private void getPoliticanById(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.setContentType("application/json");
+    Connection connection = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+
+    int politicanId = Integer.parseInt(request.getParameter("id"));
+
+    try (PrintWriter pw = response.getWriter()) {
+      connection = getDBConnection();
+      stmt = connection.prepareStatement("select Id, Forename, Surname, Party, DOB from politician where Id = ?");
+      stmt.setInt(1, politicanId);
+      stmt.execute();
+
+      rs = stmt.getResultSet();
+      Politican p = null;
+      while (rs.next()) {
+        int id = rs.getInt(1);
+        String forename = rs.getString(2);
+        String surname = rs.getString(3);
+        String party = rs.getString(4);
+        Date dob = rs.getDate(5);
+        p = new Politican(id, forename, surname, party, dob);
+      }
+      Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").create();
+      String json = gson.toJson(p);
+      pw.print(json);
+    } catch (SQLException ex) {
+      throw new ServerException("SQL", ex);
+    } finally {
+      try {
+        if (rs != null) {
+          rs.close();
+        }
+      } catch (SQLException e) {
+      }
+      try {
+        if (stmt != null) {
+          stmt.close();
+        }
+      } catch (SQLException e) {
+      }
+      try {
+        if (connection != null) {
+          connection.close();
+        }
+      } catch (SQLException e) {
+      }
     }
   }
 
