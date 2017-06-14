@@ -19,12 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import sdm.model.Politican;
 
-/**
- * Die Beschreibung des Typs hier eingeben. Erstellungsdatum: (17.03.2004
- * 13:44:17)
- *
- * @author:
- */
 public class SDMServlet extends HttpServlet {
 
   private enum GetAction {
