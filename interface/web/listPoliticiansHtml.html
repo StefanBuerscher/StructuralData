@@ -59,9 +59,9 @@ and open the template in the editor.
                             var x = row.insertCell(-1);
                             x.innerHTML = key;
                         }
+                        x = row.insertCell(-1);
+                        x.innerHtml = " ";
                     }
-
-
                     var arrayLength = response.length;
                     for (var i = 0; i < arrayLength; i++) {
                         myFunction(response[i]);
@@ -69,7 +69,10 @@ and open the template in the editor.
                 }
             }
 
-
+            function editButtonPressed(x) {
+                alert(x);
+                location.href="addPolitican.html?id="+x;
+            }
 
             function myFunction(response) {
                 var table = document.getElementById("table_politicians");
@@ -83,6 +86,9 @@ and open the template in the editor.
                         cell1.innerHTML = val;
                     }
                 }
+                var cell = row.insertCell(-1);
+                console.log(response);
+                cell.innerHTML = "<button class=\"editbtn\" onclick=\"editButtonPressed("+response.id+")\";>edit</button>";
             }
 
             //Erklärung: https://www.kirupa.com/html5/making_http_requests_js.htm
