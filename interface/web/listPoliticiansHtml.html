@@ -38,7 +38,7 @@ and open the template in the editor.
         <script>
 
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', "http://localhost:8080/sdm/test?action=getPoliticans", true);
+            xhr.open('GET', "http://localhost:8080/sdm/test?action=getPoliticansWithMoney", true);
             xhr.send();
 
             xhr.addEventListener("readystatechange", processRequest, false);
@@ -70,7 +70,6 @@ and open the template in the editor.
             }
 
             function editButtonPressed(x) {
-                alert(x);
                 location.href="addPolitican.html?id="+x;
             }
 
@@ -79,6 +78,7 @@ and open the template in the editor.
                 var row = table.insertRow(-1);
 
                 for (var key in response) {
+                    console.log(key);
                     if (response.hasOwnProperty(key)) {
 
                         var val = response[key];
@@ -90,10 +90,6 @@ and open the template in the editor.
                 console.log(response);
                 cell.innerHTML = "<button class=\"editbtn\" onclick=\"editButtonPressed("+response.id+")\";>edit</button>";
             }
-
-            //Erklärung: https://www.kirupa.com/html5/making_http_requests_js.htm
-
-
 
         </script>
     </body>

@@ -19,17 +19,19 @@ public class Politican implements Serializable {
   private String surname;
   private String party;
   private Date dob;
+  private int value;
 
   public Politican() {
 
   }
 
-  public Politican(int id, String forename, String surname, String party, Date dob) {
+  public Politican(int id, String forename, String surname, String party, Date dob, int value) {
     this.id = id;
     this.forename = forename;
     this.surname = surname;
     this.party = party;
     this.dob = dob;
+    this.value = value;
   }
 
   public int getId() {
